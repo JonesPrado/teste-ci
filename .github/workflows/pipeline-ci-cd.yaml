@@ -2,21 +2,32 @@ name: Pipeline CI/CD Completo
 
 on: [push]
 
-# Dando a credencial pro robô poder publicar o site
 permissions:
   contents: read
   pages: write
   id-token: write
 
 jobs:
-  teste-de-titulo: # AQUI É O CI (O Fiscal)
+  teste-de-titulo:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: grep -q "" index.html
+      
+      - name: Imprime o HTML no log
+        run: cat index.html
+        
+      - name: Fiscal linha dura
+        run: |
+          if grep -q "<title>" index.html; then
+            echo "Opa, achei a tag title! Passando..."
+            exit 0
+          else
+            echo "Erro: KD a tag title mano?? Bloqueando!"
+            exit 1
+          fi
 
-  deploy-site: # AQUI É O CD (O Entregador)
-    needs: teste-de-titulo 
+  deploy-site:
+    needs: teste-de-titulo
     runs-on: ubuntu-latest
     environment:
       name: github-pages
