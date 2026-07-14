@@ -1,0 +1,32 @@
+name: Pipeline CI/CD Completo
+
+on: [push]
+
+# Dando a credencial pro robô poder publicar o site
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  teste-de-titulo: # AQUI É O CI (O Fiscal)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: grep -q "" index.html
+
+  deploy-site: # AQUI É O CD (O Entregador)
+    needs: teste-de-titulo 
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+      - name: Publica no GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
