@@ -1,0 +1,14 @@
+name: Fiscal de HTML
+
+# Quando o robô deve rodar? Toda vez que alguém der um push!
+on: [push]
+
+jobs:
+  teste-de-titulo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixa o código do repositório
+        uses: actions/checkout@v4
+
+      - name: Verifica se o HTML tem a tag 
+        run: grep -q "<title>" index.html
